@@ -1,6 +1,7 @@
-var startingBet = 100;
-var payout = 12;
-var activationNumber = 35;
+var startingBet = 100;  //this is betting 1.00 not 100!
+var payout = 12; //cashout 
+var activationNumber = 35;  //activation number
+var gameCounter = 0;  //set the initial game counter of the game..
 var discordEnabled = false;
 var discordBotName = "";
 var discordWebHookUrl = "";
@@ -22,7 +23,6 @@ var previousPriority = 0;
 var previousTick     = 0;
 var previousSpeech   = "";
 var otherUsers       = [];
-var gameCounter = 0;
 
 /**
  * say() uses the Web Speech API to add speech synthesis to the script:
@@ -54,7 +54,6 @@ const say = (speech, priority, speed = NORMAL_RATE) => {
 
 var currentBet = startingBet;
 var bettingActive = false;
-var gameCounter = 0;
 var balanceAtStart = engine.getBalance()/100;
 
 var i =0;
@@ -135,8 +134,23 @@ engine.on('game_crash', function(data) {
   }
 
   // we won..
-  if (won) 
+  if(!bettingActive)
   {
+      //manual bet.
+      if(bust >= payout)
+      {
+        bettingActive = false;
+        gameCounter = 0;
+        console.log('Game Counter: ', gameCounter,' Manual Bet Detected. Bust: ', bust, ' Reset Game Counter to 0.');
+      }
+      else
+        console.log('Game Counter: ', gameCounter,' Manual Bet Detected. Bust: ', bust);
+      
+      return;
+  }
+  else if (won) 
+  {
+
     var winAmount = roundBit((currentBet * payout)/100);
 
     currentBet = startingBet;
